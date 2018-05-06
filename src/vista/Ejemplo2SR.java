@@ -57,9 +57,13 @@ public class Ejemplo2SR {
      obtenerRecomendaciones(umbralRating,umbralSimilitud);
     }
     
+    
     public static void calcularSimilitud(Vector<Video> datos) throws UnknownHostException{
         int cont;
         Manejador man1=new Manejador();
+        //Vector de emociones de Usuario 1 para 6 videos de db Video
+        double[] VectorEmocionesArray = new double[]{1,3,3.5,2,5,5};
+        
         double sim; 
         for (int i = 0; i < datos.size(); i++) {           
             System.out.println("*****************************");
@@ -77,8 +81,14 @@ public class Ejemplo2SR {
                 }
                 if(datos.get(i).getPuntuacion()==datos.get(j).getPuntuacion()){
                     cont++;
-                }              
-                sim=(2.0*cont)/(3+datos.get(i).getCompetencia().size()+3+datos.get(j).getCompetencia().size());              
+                }        
+                if (VectorEmocionesArray[i]>3){
+                    sim=(2.0*cont)/(3+datos.get(i).getCompetencia().size()+3+datos.get(j).getCompetencia().size());  
+                    }
+                else 
+                {
+                    sim=0.64321*(2.0*cont)/(3+datos.get(i).getCompetencia().size()+3+datos.get(j).getCompetencia().size());                      
+                }
               System.out.println("La similitud de "+datos.get(i).getId()+"|"+datos.get(j).getId()+" es "+sim);
              man1.insertarDocumento(datos.get(i).getId(),datos.get(j).getId(),sim);   //registra las similitudes en la colección similitudes        
             }

@@ -13,7 +13,7 @@ import java.util.Vector;
 
 /**
  *
- * @author diego
+ * @author Sebastian Cajas
  */
 public class Manejador {
     
@@ -60,7 +60,7 @@ public class Manejador {
     int i = 1;
     while (cursor.hasNext()){
         DBObject obj=cursor.next();
-        topratings.add(obj.get("idPelicula"));
+        topratings.add(obj.get("idVideo"));
         i++;
     }    
     return topratings;
