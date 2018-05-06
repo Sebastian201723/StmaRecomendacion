@@ -19,17 +19,17 @@ public class Manejador {
     
     public DB getConexion() throws UnknownHostException{
         MongoClient MongoClient=new MongoClient("localhost",27017);
-        DB db=MongoClient.getDB("pelicula");
+        DB db=MongoClient.getDB("video");
         return db;
     }
     
     public DBCollection obtenerColeccion() throws UnknownHostException{
-    DBCollection coll=getConexion().getCollection("peliculas");
+    DBCollection coll=getConexion().getCollection("videos");
    return coll;    
     }
     
     public int numerodocumentos() throws UnknownHostException{
-       DBCollection coll=getConexion().getCollection("peliculas");
+       DBCollection coll=getConexion().getCollection("videos");
        int num=(int) coll.count();
                return num; 
     }

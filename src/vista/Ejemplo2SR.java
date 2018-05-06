@@ -1,5 +1,4 @@
 package vista;
-
 import Manejador.Manejador;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -11,7 +10,7 @@ import java.util.Iterator;
 import java.util.Vector;
 import org.json.simple.parser.JSONParser;
 
-import op.Pelicula;
+import op.Video;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -30,23 +29,26 @@ public class Ejemplo2SR {
         DBCollection coll=man.obtenerColeccion(); //descripciones guardadas en coll
         DBCursor cursor = coll.find();
         int i = 1;
-       	Vector<Pelicula> datos=new Vector();        
+       	Vector<Video> datos=new Vector();        
             while (cursor.hasNext()){
                     DBObject obj=cursor.next();
-                    Pelicula p=new Pelicula();
+                    Video p=new Video();
                     p.setId((int) obj.get("_id"));
-                    p.setTitulo((String) obj.get("titulo"));
-                    String actores=(String) obj.get("actores").toString();
+                    System.out.println(p.getId());
+                    p.setNombre((String) obj.get("nombre"));
+                    System.out.println(p.getNombre());
+                    p.setPuntuacion((double) obj.get("puntuacion"));
+                    String competencia=(String) obj.get("competencia").toString();
+                    
                     String[] tokens;
-                    tokens = parsearTexto(actores); //eliminar llaves, comillas y comas
+                    tokens = parsearTexto(competencia); //eliminar llaves, comillas y comas
                     Vector temp=new Vector(); //vector para guardar actores
 
                         for (int cont = 0; cont < tokens.length; cont++){
                             temp.add(tokens[cont]);
                         }              
-                    p.setActores(temp);
-                    p.setGenero((String) obj.get("genero"));
-                    p.setAno((int) obj.get("ano"));
+                    p.setCompetencia(temp);
+                    
                     datos.add(p); //aquí se va incluyendo la info de los contenidos en el vector datos
                     i++;    
             }
@@ -55,7 +57,7 @@ public class Ejemplo2SR {
      obtenerRecomendaciones(umbralRating,umbralSimilitud);
     }
     
-    public static void calcularSimilitud(Vector<Pelicula> datos) throws UnknownHostException{
+    public static void calcularSimilitud(Vector<Video> datos) throws UnknownHostException{
         int cont;
         Manejador man1=new Manejador();
         double sim; 
@@ -63,23 +65,20 @@ public class Ejemplo2SR {
             System.out.println("*****************************");
             for (int j = i+1; j < datos.size(); j++) {  //comparación entre una posición del vector y la siguiente, es decir, entre la información de un contenido y el siguiente              
                 cont=0;
-                if(datos.get(i).getTitulo().equals(datos.get(j).getTitulo())){    
+                if(datos.get(i).getNombre().equals(datos.get(j).getNombre())){    
                 cont++; //registra las similitudes entre la información de un contenido y el siguiente
                 }               
-                for (int k = 0; k < datos.get(i).getActores().size(); k++) { //verificación cruzada entre actores, por eso un for dentro de otro
-                    for (int l = 0; l < datos.get(j).getActores().size(); l++) {                       
-                       if(datos.get(i).getActores().get(k).equals(datos.get(j).getActores().get(l))){                     
+                for (int k = 0; k < datos.get(i).getCompetencia().size(); k++) { //verificación cruzada entre actores, por eso un for dentro de otro
+                    for (int l = 0; l < datos.get(j).getCompetencia().size(); l++) {                       
+                       if(datos.get(i).getCompetencia().get(k).equals(datos.get(j).getCompetencia().get(l))){                     
                            cont++; 
                        } 
                     }
                 }
-                if(datos.get(i).getGenero().equals(datos.get(j).getGenero())){
-                    cont++;
-                }
-                if(datos.get(i).getAno()==datos.get(j).getAno()){
+                if(datos.get(i).getPuntuacion()==datos.get(j).getPuntuacion()){
                     cont++;
                 }              
-                sim=(2.0*cont)/(3+datos.get(i).getActores().size()+3+datos.get(j).getActores().size());              
+                sim=(2.0*cont)/(3+datos.get(i).getCompetencia().size()+3+datos.get(j).getCompetencia().size());              
               System.out.println("La similitud de "+datos.get(i).getId()+"|"+datos.get(j).getId()+" es "+sim);
              man1.insertarDocumento(datos.get(i).getId(),datos.get(j).getId(),sim);   //registra las similitudes en la colección similitudes        
             }
